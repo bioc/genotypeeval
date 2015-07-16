@@ -1,0 +1,138 @@
+---
+title: "genotypeeval_vignette"
+author: "Jennifer Tom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: my.bib
+vignette: >
+  %\VignetteIndexEntry{genotypeeval_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+#Introduction
+
+This package addresses the need to evaluate the quality of human sequence data using the genotypes and associated meta-data in a VCF.  It is often useful to QC the VCF for sequence quality, instead of the more traditionally assessed BAM or FASTQ file(s), as the VCF is generally a reasonable sized file (~ 8 Gb for 30x human genome).  The VCF file contains adequate information to determine if the sample data is of acceptable quality.  This package makes it easy to QC VCF files in batch, quickly identify VCF files of questionable quality, and flag these files via user defined thresholds.  This package is compatible with gVCF files but requires the use of R devel.   
+
+This package depends on external data sources and some guidance will be given in this vignette on how to prepare these datasets if the user wishes to provide reference data.
+
+Let's get started on the analysis.  First load the package.
+```{r, loadPackage, message=FALSE, warnings=FALSE}
+library(genotypeeval)
+```
+
+#Data
+We have included a slice of chromosome 22 as an example VCF file.  This example is a not meant to give biologically interpretable results but meant simply to demonstrate the tools in this package.  ReadVCFData is a wrapper around ReadVCFAsVRanges -- it will scan the header to check which INFO fields are available for QC, convert seqlevels to "NCBI", remove indels, etc.   
+```{r, loadVCF, message=FALSE, warnings=FALSE}
+vcffn <- system.file("ext-data", "chr22.GRCh38.vcf.gz", package="genotypeeval")
+mydir <- paste(dirname(vcffn), "/", sep="")
+myfile <-basename(vcffn)
+vcf <- ReadVCFData(mydir, myfile, "GRCh38")
+```
+
+Evaluation of the VCF quality relies on three datasets and "gold" standards such as [1000 Genomes](http://www.1000genomes.org/data) or [dbSNP](http://www.ncbi.nlm.nih.gov/SNP/).  This data is optional though the most utility will come from this package if external data sources are used.  In this vignette we will collect example reference data for GRCh38.
+
+We will first get the data for our coding track which will be passed in as cds.ref.  We can get this through the package TxDb.Hsapiens.UCSC.hg38.knownGene.  This is used to calculate the transition-transversion ratio in and out of the coding regions which is useful because transition-transversion ratio in the exonic regions (~3 - 3.5) is known to be much higher than that in the non-coding region (~ 2.0 -  2.1) [@Depristo11].  For consistency, only chromosomes 1-22, X, and Y are retained, the chromosomes are numeric (eg 1 instead of chr1), and the genome must be set at "GRCh38" to be consistent with the example VCF file.
+
+```{r, getCoding, message=FALSE, warnings=FALSE}
+suppressWarnings(library("TxDb.Hsapiens.UCSC.hg38.knownGene"))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+cds <- cds(txdb)
+seqlevelsStyle(cds) = "NCBI"
+reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
+cds <- keepSeqlevels(cds, reg.chrs)
+genome(cds) <- "GRCh38"
+```
+
+Also included in this package is an option to include masked regions or regions that generally cause difficulty when calling variants.  This includes, for example, [self-chain regions](https://genome.ucsc.edu/goldenPath/help/chain.html) from UCSC which essentially assigns a similarity score after mapping the genome to itself.  Calls are much more difficult to make in these self-chain regions due to mapping errors, making it a useful criteria for evaluating a VCF file.  Other tracks one may include here are paralogs or repeat masked regions.  This track should be formatted as a GRanges.
+
+We can compare our VCF against known data sources (gold standards) such as [1000 Genomes](http://www.1000genomes.org/data) or dbSNP.  We load this in as a gold standard.  Let's use dbSNP build 141 (available as source package).
+
+```{r, loadGold, message=FALSE, warnings=FALSE, message=FALSE}
+suppressWarnings(library("SNPlocs.Hsapiens.dbSNP141.GRCh38"))
+snps <- SNPlocs.Hsapiens.dbSNP141.GRCh38
+dbsnp.ch22 <- snplocs(snps, "ch22", as.GRanges=TRUE)
+seqlevelsStyle(dbsnp.ch22) = "NCBI"
+gold.param = GoldDataParam(percent.confirmed=0.8)
+gold <- GoldDataFromGRanges("GRCh38", dbsnp.ch22, gold.param)
+```
+
+We now have the gold file comparator read in.  This object contains the gold file as a GRanges and uses the allele frequencies (AF), if present, to generate another "rare" GRanges with allele frequency less than 1%.  In addition, the gold file has params associated with it.  For example, percent.confirmed is the percent of the VCF file SNP calls confirmed in the gold file.  We have set here a threshold of 80.0% -- in order for this sample to pass, at least 80.0% of the calls need to be present in the gold comparator file.  All param variables are documented and can be accessed with help(GoldDataParam).  There are many different params available that have default values meant to always pass a sample.  Samples will only fail on params that the user has specified thresholds for.  
+
+
+Finally we need an admixture.ref object.  A great resource for this is the 1000 genomes superpopulation allele frequencies available at [1000 Genomes](http://www.1000genomes.org/data).  A subsample of around 200,000 SNPs from 1000 genomes is sufficient.  When subsampling the file, allele frequencies should be selected to be informative (different between the populations).  The most recent released files can be downloaded and subsampled here:  ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/.  As the name of this object implies, the allele depth of the superpopulations East Asian (EAS), African (AFR), and European (EUR) are used to estimate ancestry proportions.  Many of the metrics calculated on the VCF files depend on ethnic background [@Kidd12] so it would be unwise to fail samples without accounting for the population of the sample.  Ancestry estimation is done via the supervised ADMIXTURE algorithm [@Alexander09].
+
+For the purposes of this tutorial we will create simulated allele frequencies based on our example VCF file.  These mock allele frequencies confer East Asian ancestry on this individual.  We use the genotype calls and the coordinates from the example file to set the AF accordingly.  We infer ancestry proportions EAS, AFR, and EUR on a scale from zero to one and the three ancestry proportions add up to one.  
+
+```{r, prepAdmix, message=FALSE, warnings=FALSE}
+    admix.var <- getVR(vcf)[getVR(vcf)$GT %in% c("0|1", "1|0", "1|1"),][,1:2]
+    admix.var$EAS_AF <- ifelse(admix.var$GT %in% c("1|1"), 1, .5)
+    admix.var$AFR_AF<- 0
+    admix.var$EUR_AF<- 0
+    admix.hom <- getVR(vcf)[getVR(vcf)$GT %in% c("0|0"),][,1:2]
+    admix.hom$EAS_AF<- 0
+    admix.hom$AFR_AF<- 1
+    admix.hom$EUR_AF<- 1
+    admix.ref <- c(admix.var, admix.hom)
+```
+
+
+#Analysis
+
+Now that we have our reference data, we can get started on the analysis. 
+
+We can set lower and upper thresholds for the params of interest in our VCF file.  For example, say we are interested in setting a lower bound on the total number of counts in the file.  We can set a lower limit at 3 billion for the human genome.  Similarly we set lower and upper thresholds for transition-transversion ratio in coding and noncoding regions.  Thresholds again will only be applied on the params that the user specified.  We have set the limits here on a small subset of the params available.  To see all the params available use help(VCFQAParam)
+
+```{r, runVCF}
+vcfparams <- VCFQAParam(count.limits=c(3e9, Inf), titv.noncoding=c(1.99, 4),
+                        titv.coding=c(2.8, 4))
+```
+
+Next we evaluate the file by calling VCFEvaluate.  This function calculate a list of metrics of interest based on the fields present in the header of the VCF file.  If we didn't have any reference data we could still look at some basic stats of the VCF file.
+
+```{r, evaluatenoref, message=FALSE, warning=FALSE}
+ev.noref <- VCFEvaluate(vcf, vcfparams)
+```
+
+However since we prepared the reference data, we'll have a look with the reference data.
+```{r, evaluate, message=FALSE, warning=FALSE}
+ev <- VCFEvaluate(vcf, vcfparams, gold.ref=gold, cds.ref=cds, admixture.ref = admix.ref)
+```
+
+#Results
+
+First we check if our sample passed.  We can get a list of the individual metrics the sample passed for as well as an overall TRUE (passed) or FALSE (failed).  A sample must pass all criteria the user defined in order to pass.
+```{r, passed}
+didSamplePassOverall(ev)
+```
+Looks like our sample failed.  If we look in more detail we see that the numberCalls didn't pass.  We set the threshold at about 3 billion for the human genome but since we are just analyzing part of chromosome 22, there were not enough calls to pass.  If we were analyzing a whole genome sample, a low number of total counts could imply VCF truncation.
+```{r, passedDetails}
+head(didSamplePass(ev))
+```
+
+We can look in more detail at the numeric values of our metrics.  In this sample we have a median read depth at our genotype calls of 30.  We didn't supply the target read depth in the VCFParams so percentInTarget was not calculated.  We can see the total number of calls (1206) falls far short of the number of calls in the human genome.  Many of the results are NA because the other chromosomes are not present in this file.  Again, all of the metrics are documented and can be accessed with help(VCFQAParam).
+```{r, results}
+head(getResults(ev))
+```
+
+We can specifically look at our ancestry estimation which shows, as we set up for our example, the individual is likely of EAS descent.
+```{r, results2}
+getResults(ev)[c("admixture.EAS", "admixture.EUR", "admixture.AFR")]
+```
+
+Finally we can take a look at a few of the plots generated.  Here we have calls broken down by variant type.  We  see that there are phased heterozygous calls and homozygous alternative calls.
+```{r, plots}
+getPlots(ev)$variant_type
+```
+
+One very useful plot is the number of heterozygous and homozygous alternative calls by chromosome which detects one of the most frequent problems we encounter with VCFs that aren't detected from the BAM -- truncation of the VCF.
+```{r, plots2}
+getPlots(ev)$chr
+```
+
+If the user is interested in running this package in batch, it can easily be integrated with the R package BatchJobs.  It requires about five times the size of the VCF file for memory.  When running in batch, the user may want to take advantage of multi-core.  This can be done with the function ReadVCFDataChunk.  This option will read in the VCF file using the numcores that you specify.  This option will speed the reading of the VCF file and also reduce the memory footprint.  It requires the admixture file as it only retains the homozygous reference calls for processing that are present in the admixture file.  Please refer to the documentation for this function prior to using it.  Hope this helps your QC efforts.
+
+#Bibliography
+
+
+#Bibliography
