@@ -9,7 +9,20 @@ setOldClass("gg")
 #' @import VariantAnnotation
 #' @import BiocGenerics
 #' @import GenomicRanges
-#' @import ggplot2
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 coord_fixed
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 geom_text
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 geom_histogram
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_bar
 #' @import rtracklayer
 #' @import GenomeInfoDb
 #' @import IRanges
@@ -268,7 +281,7 @@ ReadVCFDataChunk <- function(mydir, myfile, genome, admixture.ref, numcores) {
         infoString =c("END")
     }
     #pull in  line of file
-    myline = read.table(myfn, nrows = 1, skip = 500, header=FALSE)
+    myline = utils::read.table(myfn, nrows = 1, skip = 500, header=FALSE)
     seqprefix = ""
     if (!is.na(pmatch("chr",myline[,1]))) {
         seqprefix = "chr"

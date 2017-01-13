@@ -34,6 +34,15 @@ Evaluation of the VCF quality relies on three datasets and "gold" standards such
 
 We will first get the data for our coding track which will be passed in as cds.ref.  We can get this through the package TxDb.Hsapiens.UCSC.hg38.knownGene.  This is used to calculate the transition-transversion ratio in and out of the coding regions which is useful because transition-transversion ratio in the exonic regions (~3 - 3.5) is known to be much higher than that in the non-coding region (~ 2.0 -  2.1) [@Depristo11].  For consistency, only chromosomes 1-22, X, and Y are retained, the chromosomes are numeric (eg 1 instead of chr1), and the genome must be set at "GRCh38" to be consistent with the example VCF file.
 
+If you do not have the following libraries (TxDb.Hsapiens.UCSC.hg38.knownGene and dbSNP141 installed yet run the following chunk of code:
+```{r, getLibrary, eval=FALSE}
+source("https://bioconductor.org/biocLite.R")
+biocLite("TxDb.Hsapiens.UCSC.hg38.knownGene")
+biocLite("SNPlocs.Hsapiens.dbSNP141.GRCh38")
+
+```
+
+
 ```{r, getCoding, message=FALSE, warnings=FALSE}
 suppressWarnings(library("TxDb.Hsapiens.UCSC.hg38.knownGene"))
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
@@ -57,10 +66,10 @@ gold.param = GoldDataParam(percent.confirmed=0.8)
 gold <- GoldDataFromGRanges("GRCh38", dbsnp.ch22, gold.param)
 ```
 
+
 We now have the gold file comparator read in.  This object contains the gold file as a GRanges and uses the allele frequencies (AF), if present, to generate another "rare" GRanges with allele frequency less than 1%.  In addition, the gold file has params associated with it.  For example, percent.confirmed is the percent of the VCF file SNP calls confirmed in the gold file.  We have set here a threshold of 80.0% -- in order for this sample to pass, at least 80.0% of the calls need to be present in the gold comparator file.  All param variables are documented and can be accessed with help(GoldDataParam).  There are many different params available that have default values meant to always pass a sample.  Samples will only fail on params that the user has specified thresholds for.  
 
-
-Finally we need an admixture.ref object.  A great resource for this is the 1000 genomes superpopulation allele frequencies available at [1000 Genomes](http://www.1000genomes.org/data).  A subsample of around 200,000 SNPs from 1000 genomes is sufficient.  When subsampling the file, allele frequencies should be selected to be informative (different between the populations).  The most recent released files can be downloaded and subsampled here:  ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/.  As the name of this object implies, the allele depth of the superpopulations East Asian (EAS), African (AFR), and European (EUR) are used to estimate ancestry proportions.  Many of the metrics calculated on the VCF files depend on ethnic background [@Kidd12] so it would be unwise to fail samples without accounting for the population of the sample.  Ancestry estimation is done via the supervised ADMIXTURE algorithm [@Alexander09].
+Finally we need an admixture.ref object.  A great resource for this is the 1000 genomes superpopulation allele frequencies available at [1000 Genomes](http://www.1000genomes.org/data).  A subsample of around 200,000 SNPs from 1000 genomes is sufficient.  When subsampling the file, allele frequencies should be selected to be informative (different between the populations).  The most recent released files can be downloaded and subsampled here:  ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/.  As the name of this object implies, the allele depth of the superpopulations East Asian (EAS), African (AFR), and European (EUR) are used to estimate ancestry proportions.  Many of the metrics calculated on the VCF files depend on ethnic background [@Kidd12] so it would be unwise to fail samples without accounting for the population of the sample.  Ancestry estimation is done via the supervised ADMIXTURE algorithm [@Alexander09].  I will show at the end of this document how to download 1000 genomes data within R.  This is optional and as the data set is large, will take some time to load.
 
 For the purposes of this tutorial we will create simulated allele frequencies based on our example VCF file.  These mock allele frequencies confer East Asian ancestry on this individual.  We use the genotype calls and the coordinates from the example file to set the AF accordingly.  We infer ancestry proportions EAS, AFR, and EUR on a scale from zero to one and the three ancestry proportions add up to one.  
 
@@ -115,10 +124,7 @@ We can look in more detail at the numeric values of our metrics.  In this sample
 head(getResults(ev))
 ```
 
-We can specifically look at our ancestry estimation which shows, as we set up for our example, the individual is likely of EAS descent.
-```{r, results2}
-getResults(ev)[c("admixture.EAS", "admixture.EUR", "admixture.AFR")]
-```
+We see in the first three values are the results of our ancestry estimation which shows, as we set up for our example, the individual is likely of EAS descent.
 
 Finally we can take a look at a few of the plots generated.  Here we have calls broken down by variant type.  We  see that there are phased heterozygous calls and homozygous alternative calls.
 ```{r, plots}
@@ -131,6 +137,8 @@ getPlots(ev)$chr
 ```
 
 If the user is interested in running this package in batch, it can easily be integrated with the R package BatchJobs.  It requires about five times the size of the VCF file for memory.  When running in batch, the user may want to take advantage of multi-core.  This can be done with the function ReadVCFDataChunk.  This option will read in the VCF file using the numcores that you specify.  This option will speed the reading of the VCF file and also reduce the memory footprint.  It requires the admixture file as it only retains the homozygous reference calls for processing that are present in the admixture file.  Please refer to the documentation for this function prior to using it.  Hope this helps your QC efforts.
+
+
 
 #Bibliography
 

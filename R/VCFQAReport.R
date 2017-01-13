@@ -94,7 +94,9 @@ VCFEvaluate <- function(myvcf, vcfparams, gold.ref=NA, cds.ref=NA, masked.ref =N
         results$gold.ref <- goldCompare(myvcf, gold.ref@track, cds.ref, gold.ref@goldparams@titv.confirmed.limits, gold.ref@goldparams@titv.unconfirmed.limits, gold.ref@goldparams@percent.confirmed.limits, "Gold comparator")
     }
 
-              results$MULTI <- list("Multi Calls", TRUE, myvcf@n.dup)
+    results$MULTI <- list("Multi Calls", TRUE, myvcf@n.dup)
+            results$X.het <- XHeterozygosity(myvcf@vr)
+
               results.as.list <- do.call(Map, c(c,results))
               tests <- (unlist((results.as.list)[2]))
               printnames <- (unlist((results.as.list)[1]))
@@ -539,7 +541,7 @@ getCoefs <- function(seed, dat) {
     bvec <- c(0,0,0)
     #g is the minor allele count
     amat%*%seed - bvec
-    result <- constrOptim(seed, data=dat, myf, NULL, ui=amat, ci=bvec)
+    result <- stats::constrOptim(seed, data=dat, myf, NULL, ui=amat, ci=bvec)
     q1 <- result$par[1]/sum(result$par)
     q2 <- result$par[2]/sum(result$par)
     q3 <- result$par[3]/sum(result$par)
@@ -588,6 +590,19 @@ names(returnMe) <- c("EAS", "AFR", "EUR")
 return(list("Admixture", rep(TRUE,6), returnMe))
         }
           )
+
+#' Calculate X heterozygosity to determine Gender
+#' @return number of X chromosome het calls
+#' @param x myvcf of interest
+#' @keywords internal
+setGeneric(name="XHeterozygosity", def=function(x) {standardGeneric("XHeterozygosity")})
+
+setMethod("XHeterozygosity",
+          signature=c(x="VRanges"),
+          definition=function(x) {
+          dat.sub <- subset(x, seqnames(x) == "X" & x$variant == 1)
+          return(list("X Heterozygosity", TRUE, length(dat.sub)))        
+})
 
 
 #############################################################################################
@@ -742,13 +757,68 @@ g <- ggplot(plotMe, aes(x=Chromosome, y=Count)) + geom_point(color="blue") + ggt
 #' didSamplePassOverall(ev)
 didSamplePassOverall <- function(Object) {
               if (all(slot(Object, "tests"))) {
-              cat("SAMPLE PASSED \n")
-              return(TRUE)
+              cat("Sample Status \n")
+              return("Pass")
           }
-          else {cat("SAMPLE FAILED \n")
-            return(FALSE)}
+          else {cat("Sample Status \n")
+            return("Fail")}
           }
           
+
+
+#' Return vector of long descriptions for variable names
+#' @return description of variable names
+#' @param x variable names to translate
+#' @keywords internal
+setGeneric(name="getDescriptors", def=function(x) {standardGeneric("getDescriptors")})
+
+setMethod("getDescriptors",
+          signature=c(x="character"),
+          definition=function(x) {
+              x[x=="ancestry.EAS"] <- "East Asian Ancestry Coefficient"
+              x[x=="ancestry.AFR"] <- "African Ancestry Coefficient"
+              x[x=="ancestry.EUR"] <- "European Ancestry Coefficient"
+              x[x=="numberOfHomRefs"] <- "Number of Homozygous Reference Calls"
+              x[x=="numberCalls"] <- "Total Number of Calls (Hom Ref + Hom Alt + Het)"
+              x[x=="medianReadDepth"] <- "Median Read Depth"
+              x[x=="percentInTarget"] <- "Percent in Target Read Depth Range"
+              x[x=="percentHets"] <- "Percent Heterozygote Calls"
+              x[x=="numberOfHomVars"] <- "Number of Homozygous Variant Calls"
+              x[x=="hetGap.chr1"] <- "Largest Gap Between Heterozygotes on Chromosome 1"
+              x[x=="hetGap.chr2"] <- "Largest Gap Between Heterozygotes on Chromosome 2"
+              x[x=="hetGap.chr3"] <- "Largest Gap Between Heterozygotes on Chromosome 3"
+              x[x=="hetGap.chr4"] <- "Largest Gap Between Heterozygotes on Chromosome 4"
+              x[x=="hetGap.chr5"] <- "Largest Gap Between Heterozygotes on Chromosome 5"
+              x[x=="hetGap.chr6"] <- "Largest Gap Between Heterozygotes on Chromosome 6"
+              x[x=="hetGap.chr7"] <- "Largest Gap Between Heterozygotes on Chromosome 7"
+              x[x=="hetGap.chr8"] <- "Largest Gap Between Heterozygotes on Chromosome 8"
+              x[x=="hetGap.chr9"] <- "Largest Gap Between Heterozygotes on Chromosome 9"
+              x[x=="hetGap.chr10"] <- "Largest Gap Between Heterozygotes on Chromosome 10"
+              x[x=="hetGap.chr11"] <- "Largest Gap Between Heterozygotes on Chromosome 11"
+              x[x=="hetGap.chr12"] <- "Largest Gap Between Heterozygotes on Chromosome 12"
+              x[x=="hetGap.chr13"] <- "Largest Gap Between Heterozygotes on Chromosome 13"
+              x[x=="hetGap.chr14"] <- "Largest Gap Between Heterozygotes on Chromosome 14"
+              x[x=="hetGap.chr15"] <- "Largest Gap Between Heterozygotes on Chromosome 15"
+              x[x=="hetGap.chr16"] <- "Largest Gap Between Heterozygotes on Chromosome 16"
+              x[x=="hetGap.chr17"] <- "Largest Gap Between Heterozygotes on Chromosome 17"
+              x[x=="hetGap.chr18"] <- "Largest Gap Between Heterozygotes on Chromosome 18"
+              x[x=="hetGap.chr19"] <- "Largest Gap Between Heterozygotes on Chromosome 19"
+              x[x=="hetGap.chr20"] <- "Largest Gap Between Heterozygotes on Chromosome 20"
+              x[x=="hetGap.chr21"] <- "Largest Gap Between Heterozygotes on Chromosome 21"
+              x[x=="hetGap.chr22"] <- "Largest Gap Between Heterozygotes on Chromosome 22"
+              x[x=="hetGap.chrX"] <- "Largest Gap Between Heterozygotes on Chromosome X"
+              x[x=="meanGQ"] <- "Mean Genotype Quality (GQ)"
+              x[x=="titv.non-coding"] <- "Transition Transversion Ratio in Non Coding Regions"
+              x[x=="titv.coding"] <- "Transition Transversion Ratio in Coding Regions"
+              x[x=="gold.ref.titv_noncoding_unconfirmed"] <- "Transition Transversion Ratio in Noncoding Regions + Not Confirmed in Gold Comparator"
+              x[x=="gold.ref.titv_coding_unconfirmed"] <- "Transition Transversion Ratio in Coding Regions + Not Confirmed in Gold Comparator"
+              x[x=="gold.ref.titv_noncoding_confirmed"] <- "Transition Transversion Ratio in Noncoding Regions + Confirmed in Gold Comparator"
+              x[x=="gold.ref.titv_coding_confirmed"] <- "Transition Transversion Ratio in Coding Regions + Confirmed in Gold Comparator"
+              x[x=="MULTI"] <- "Number of Multi Calls"
+              x[x=="X.het"] <- "X Heterozygosity"
+              x[x=="gold.ref.percent_confirmed"] <- "Proportion Confirmed in Gold Comparator"
+ return(x)
+})
 
 #' Getter for VCFEvaluate class to check if Sample Passed.  Using thresholds from VCFQAParam object return a list.  First return whether each test was passed (TRUE) or failed (FALSE).  Then return an overall pass (TRUE) or fail (FALSE).
 #' @export
@@ -764,9 +834,21 @@ didSamplePassOverall <- function(Object) {
 #' ev <- VCFEvaluate(vcf, vcfparams)
 #' didSamplePass(ev)
 didSamplePass <- function(Object) {
-          return(slot(Object, "tests"))      
+    didpass = (slot(Object, "tests"))
+    didpass[didpass==TRUE] <- "Pass"
+    didpass[didpass==FALSE] <- "Fail"
+    #remove the ancestry coefs
+    didpass <- didpass[-c(1:6)]
+    res <- data.frame(didpass)
+    names(res) <- "Sample Status"
+    res$Description = getDescriptors(rownames(res))
+  rownames(res) <- NULL
+
+    return(res)
                      }
- 
+
+
+
 #' Getter for VCFQAReport class to return results.  Return a list showing values that the sample was evaluated on.
 #' @param Object an object of type VCFQAReport
 #' @return numeric vector of results
@@ -781,8 +863,14 @@ didSamplePass <- function(Object) {
 #' ev <- VCFEvaluate(vcf, vcfparams)
 #' getResults(ev)
 getResults <- function(Object) {
-              return(Object@results)
-          }
+    res <- Object@results
+    res <- data.frame(res)
+    names(res) <- "Value"
+    res$Description = getDescriptors(rownames(res))
+  rownames(res) <- NULL
+  
+    return(res)
+}
 
 #' Getter for VCFQAReport class to return plots slot.
 #' @param Object Object of Class VCFQAReport

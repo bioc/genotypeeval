@@ -5,7 +5,6 @@
 #' @import VariantAnnotation
 #' @import BiocGenerics
 #' @import GenomicRanges
-#' @import ggplot2
 #' @import rtracklayer
 #' @import GenomeInfoDb
 #' @import IRanges

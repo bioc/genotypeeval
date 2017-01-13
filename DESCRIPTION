@@ -1,22 +1,40 @@
 Package: genotypeeval
 Title: QA/QC of a gVCF or VCF file
-Version: 1.5.0
+Version: 1.6.0
 Authors@R: person('Jennifer', 'Tom', email = 'tom.jennifer@gene.com',
         role=c('aut', 'cre'))
 Description: Takes in a gVCF or VCF and reports metrics to assess
-        quality of calls.
-Depends: R (>= 3.2.0), VariantAnnotation
-Imports: ggplot2, rtracklayer, BiocGenerics, GenomicRanges,
-        GenomeInfoDb, IRanges, methods, BiocParallel
-Collate: GoldDataParam.R GoldData.R VCFData.R VCFQAParam.R
-        VCFQAReport.R PopulationSummary.R
+    quality of calls.
+Depends:
+    R (>= 3.2.0),
+    VariantAnnotation
+Imports:
+    ggplot2,
+    rtracklayer,
+    BiocGenerics,
+    GenomicRanges,
+    GenomeInfoDb,
+    IRanges,
+    methods,
+    BiocParallel
+Collate:
+    GoldDataParam.R
+    GoldData.R
+    VCFData.R
+    VCFQAParam.R
+    VCFQAReport.R
+    PopulationSummary.R
 License: file LICENSE
 LazyData: true
-Suggests: knitr, testthat, SNPlocs.Hsapiens.dbSNP141.GRCh38,
-        TxDb.Hsapiens.UCSC.hg38.knownGene
+Suggests:
+    knitr,
+    testthat,
+    SNPlocs.Hsapiens.dbSNP141.GRCh38,
+    TxDb.Hsapiens.UCSC.hg38.knownGene
 VignetteBuilder: knitr
 Author: Jennifer Tom [aut, cre]
 Maintainer: Jennifer Tom <tom.jennifer@gene.com>
 biocViews: Genetics, BatchEffect, Sequencing, SNP, VariantAnnotation,
-        DataImport
+    DataImport
 NeedsCompilation: no
+RoxygenNote: 5.0.1
