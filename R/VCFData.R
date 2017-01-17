@@ -53,6 +53,7 @@ setClass(Class="VCFData", representation=representation(mydir="character", myfil
 #' @export
 #' @param mydir Directory of vcf file
 #' @param myfile Filename of vcf file
+#' @param which Specify the chromosome of interest
 #' @param genome GRCh37 or GRCh38
 #' @examples
 #' vcffn <- system.file("ext-data", "chr22.GRCh38.vcf.gz", package="genotypeeval")
@@ -86,11 +87,30 @@ ReadVCFData <- function(mydir, myfile, genome) {
     }
     .Object@infoString = infoString
 
-     svp <- ScanVcfParam(geno=genoString, info=infoString)
+    # svp <- ScanVcfParam(geno=genoString, info=infoString)
     #need to swap this single line if doing a pop vcf
     #svp <- ScanVcfParam(which=GRanges("1",IRanges(1,100e6)), geno=genoString, info=NA)
     #svp <- ScanVcfParam(which=GRanges("chr1",IRanges(1,100e5)), geno=genoString, info=infoString)
+    seqprefix = ""
+    if (length(grep("chr", rownames(meta(scanVcfHeader(myfn))$contig)[1])) > 0) {
+        seqprefix = "chr"
+    }
+    vcf.chrs <- rownames(as.data.frame(seqinfo(scanVcfHeader(myfn))))
+    #only want to bpl the chromosomes present
+    reg.chrs <- NULL
+    for (i in 1:22) {
+        if ((paste("chr", as.character(i), sep="") %in% vcf.chrs) || (as.character(i) %in% vcf.chrs)) {
+            reg.chrs <- c(reg.chrs, as.character(i))
+        }}
+    if (("chrX" %in% vcf.chrs) || ("X" %in% vcf.chrs)) {
+    reg.chrs <- c(reg.chrs, "X")
+    }
 
+    if (("chrY" %in% vcf.chrs) || ("Y" %in% vcf.chrs)) {
+    reg.chrs <- c(reg.chrs, "Y")
+    }
+    svp <- ScanVcfParam(geno=genoString, info=infoString)
+ 
     .Object@vr <- readVcfAsVRanges(myfn, genome=genome, param=svp)
     #remove any indels
     .Object@vr <- subset(.Object@vr, ref(.Object@vr) %in% c("A", "G", "T", "C"))
@@ -101,7 +121,7 @@ ReadVCFData <- function(mydir, myfile, genome) {
     seqlevelsStyle(.Object@vr) = "NCBI"
     #get rid of all GLs
     #reg.chrs <- c(as.character(seq(1:22)))
-    reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
+    #reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
     .Object@vr <- keepSeqlevels(.Object@vr, reg.chrs)
     #keepStandardChromosomes(vr)
     hets <- c("0/1", "1|0", "0|1")
