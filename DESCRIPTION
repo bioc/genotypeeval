@@ -27,11 +27,11 @@ Collate:
 License: file LICENSE
 LazyData: true
 Suggests:
-    rmarkdown,
+    knitr,
     testthat,
     SNPlocs.Hsapiens.dbSNP141.GRCh38,
     TxDb.Hsapiens.UCSC.hg38.knownGene
-VignetteBuilder: rmarkdown
+VignetteBuilder: knitr
 Author: Jennifer Tom [aut, cre]
 Maintainer: Jennifer Tom <tom.jennifer@gene.com>
 biocViews: Genetics, BatchEffect, Sequencing, SNP, VariantAnnotation,
