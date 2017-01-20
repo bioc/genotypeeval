@@ -53,7 +53,6 @@ setClass(Class="VCFData", representation=representation(mydir="character", myfil
 #' @export
 #' @param mydir Directory of vcf file
 #' @param myfile Filename of vcf file
-#' @param which Specify the chromosome of interest
 #' @param genome GRCh37 or GRCh38
 #' @examples
 #' vcffn <- system.file("ext-data", "chr22.GRCh38.vcf.gz", package="genotypeeval")

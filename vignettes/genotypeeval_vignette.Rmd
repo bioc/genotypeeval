@@ -48,8 +48,6 @@ suppressWarnings(library("TxDb.Hsapiens.UCSC.hg38.knownGene"))
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 cds <- cds(txdb)
 seqlevelsStyle(cds) = "NCBI"
-reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
-cds <- keepSeqlevels(cds, reg.chrs)
 genome(cds) <- "GRCh38"
 ```
 
