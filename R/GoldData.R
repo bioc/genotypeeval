@@ -94,8 +94,8 @@ readVcfGold <- function(vcfFile,rare, genome) {
     }
     vr <- readVcfAsVRanges(vcfFile, genome=genome, param=svp)
     seqlevelsStyle(vr) = "NCBI"
-    reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
-    vr <- keepSeqlevels(vr, reg.chrs)
+    #reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
+    #vr <- keepSeqlevels(vr, reg.chrs)
     #keepStandardChromosomes(vr)
     genome(vr) <- genome
     return(vr)
