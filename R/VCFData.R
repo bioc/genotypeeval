@@ -180,7 +180,7 @@ chunkData <- function(myfn, genome, svp, admixture.ref) {
 
                                         #reg.chrs <- c(as.character(seq(1:22)))
     reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
-    vr <- keepSeqlevels(vr, reg.chrs)
+    #vr <- keepSeqlevels(vr, reg.chrs)
     #hets <- c("0/1", "1|0", "0|1", "0/2", "0/3", "0/4", "1/2", "1/4", "2/3", "2/4")   
     #hom_alts <- c("1/1", "1|1", "2/2")
     #hom_refs <- c("0/0", "0|0")
