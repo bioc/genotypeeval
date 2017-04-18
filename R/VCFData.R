@@ -23,6 +23,12 @@ setOldClass("gg")
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 theme_minimal
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 scale_color_manual
+#' @importFrom ggplot2 scale_fill_manual
+#' @import Rtsne
 #' @import rtracklayer
 #' @import GenomeInfoDb
 #' @import IRanges

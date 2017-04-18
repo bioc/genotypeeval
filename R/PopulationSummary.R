@@ -15,3 +15,63 @@ reformatData <- function(results) {
     return(list("pass"=all.samples.pass, "results"=all.samples.results))
    }
 
+
+#' makeHistogram.  Using a variable presumed to be associated with a batch effect, create a histogram to visualize the differences
+#' @return ggplot2
+#' @export
+#' @param results a data frame with population level results
+#' @param batcheffect meta data variable presumed to be associated with a batch effect
+#' @param variable variable of interest from genotypeeval results
+#' @param mycolors vector of colors for histogram
+#' @examples
+#' results <- read.table(system.file("ext-data", "example_results.txt", package="genotypeeval"), header=TRUE)
+#' batcheffect <- "batch"
+#' variable <- "medianReadDepth"
+#' makeHistogram(results, batcheffect, variable)
+
+makeHistogram <- function(results, batcheffect, variable, mycolors=c("red", "blue")) {
+  dat.s <- data.frame("batch.var"=get(batcheffect, results), "var"=get(variable, results))
+g <- ggplot(dat.s, aes(fill=as.factor(dat.s$batch.var), x=dat.s$var)) + geom_histogram() + 
+  scale_x_continuous(variable)+ theme_minimal()+theme(legend.position="none", text=element_text(size=30))+ scale_y_continuous("Count")+ scale_fill_manual(values=mycolors) 
+return(g)
+}
+
+#' tsnePlot  Wrapper to create a tSNE plot from Rtsne.  See Rtsne for further documentation.
+#' @return ggplot2
+#' @export
+#' @param dat a data frame with variables of interest for dimension reduction and meta variable for batch effect
+#' @param batcheffect meta data variable presumed to be associated with a batch effect to color tsne plot
+#' @param dims dims for tSNE plot, tuning parameter
+#' @param initial_dims initial_dims for tSNE plot, tuning parameter
+#' @param perplexity perplexity for tSNE plot, tuning parameter
+#' @examples
+#' results <- read.table(system.file("ext-data", "example_results.txt", package="genotypeeval"), header=TRUE)
+#' results$sampleid <- NULL
+#' g <- tsnePlot(results, "batch")
+#' plot(g)
+
+tsnePlot <- function(dat, batcheffect, dims=2, initial_dims=50, perplexity = 30) {
+  batches <- get(batcheffect, dat)
+  mynum <- which(names(dat) == batcheffect)
+  X <- dat[,-mynum]
+  tsne_out <- Rtsne(X, perplexity=perplexity, initial_dims=initial_dims)
+  plotMe <- as.data.frame(tsne_out$Y)
+  names(plotMe) <- c("tsne.1", "tsne.2")
+  plotMe$batch <- batches
+  g <- ggplot(data=plotMe, aes(x=plotMe$tsne.1, y=plotMe$tsne.2, color=as.factor(plotMe$batch))) + geom_point() + scale_color_manual(values=c("blue", "black")) + theme(text=element_text(size=15))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
