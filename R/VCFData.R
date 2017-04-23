@@ -28,6 +28,8 @@ setOldClass("gg")
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 scale_color_manual
 #' @importFrom ggplot2 scale_fill_manual
+#' @importFrom graphics pairs
+#' @importFrom stats prcomp
 #' @import Rtsne
 #' @import rtracklayer
 #' @import GenomeInfoDb

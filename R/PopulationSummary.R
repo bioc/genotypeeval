@@ -16,7 +16,7 @@ reformatData <- function(results) {
    }
 
 
-#' makeHistogram.  Using a variable presumed to be associated with a batch effect, create a histogram to visualize the differences
+#' Using a variable presumed to be associated with a batch effect, create a histogram to visualize the differences
 #' @return ggplot2
 #' @export
 #' @param results a data frame with population level results
@@ -36,7 +36,7 @@ g <- ggplot(dat.s, aes(fill=as.factor(dat.s$batch.var), x=dat.s$var)) + geom_his
 return(g)
 }
 
-#' tsnePlot  Wrapper to create a tSNE plot from Rtsne.  See Rtsne for further documentation.
+#' Wrapper to create a tSNE plot from Rtsne.  See Rtsne for further documentation.
 #' @return ggplot2
 #' @export
 #' @param dat a data frame with variables of interest for dimension reduction and meta variable for batch effect
@@ -44,13 +44,14 @@ return(g)
 #' @param dims dims for tSNE plot, tuning parameter
 #' @param initial_dims initial_dims for tSNE plot, tuning parameter
 #' @param perplexity perplexity for tSNE plot, tuning parameter
+#' @param max.iter max.iter for the tSNE plot, tuning parameter
 #' @examples
 #' results <- read.table(system.file("ext-data", "example_results.txt", package="genotypeeval"), header=TRUE)
 #' results$sampleid <- NULL
 #' g <- tsnePlot(results, "batch")
 #' plot(g)
 
-tsnePlot <- function(dat, batcheffect, dims=2, initial_dims=50, perplexity = 30) {
+tsnePlot <- function(dat, batcheffect, dims=2, initial_dims=50, perplexity = 30, max.iter=5000) {
   batches <- get(batcheffect, dat)
   mynum <- which(names(dat) == batcheffect)
   X <- dat[,-mynum]
@@ -63,6 +64,28 @@ tsnePlot <- function(dat, batcheffect, dims=2, initial_dims=50, perplexity = 30)
 
 
 
+
+
+
+#' Wrapper to create a PCA plot, centers and scales variables by default
+#' @return ggplot2
+#' @export
+#' @param dat a data frame with variables of interest for dimension reduction and meta variable for batch effect
+#' @param batcheffect meta data variable presumed to be associated with a batch effect to color tsne plot
+#' @examples
+#' results <- read.table(system.file("ext-data", "example_results.txt", package="genotypeeval"), header=TRUE)
+#' results$sampleid <- NULL
+#' g <- pcaPlot(results, "batch")
+
+pcaPlot <- function(dat, batcheffect) {
+  batches <- as.factor(get(batcheffect, dat))
+  mynum <- which(names(dat) == batcheffect)
+  X <- dat[,-mynum]
+  pcs <- prcomp(X, center=TRUE, scale=TRUE)
+  plotMe <- pcs$x
+  #plot(plotMe)
+  pairs(plotMe, col=batches) 
+}
 
 
 
