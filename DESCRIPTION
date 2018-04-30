@@ -1,6 +1,6 @@
 Package: genotypeeval
 Title: QA/QC of a gVCF or VCF file
-Version: 1.12.0
+Version: 1.13.0
 Authors@R: person('Jennifer', 'Tom', email = 'tom.jennifer@gene.com',
         role=c('aut', 'cre'))
 Description: Takes in a gVCF or VCF and reports metrics to assess
