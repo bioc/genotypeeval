@@ -30,7 +30,6 @@ setOldClass("gg")
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom graphics pairs
 #' @importFrom stats prcomp
-#' @import Rtsne
 #' @import rtracklayer
 #' @import GenomeInfoDb
 #' @import IRanges
@@ -129,7 +128,7 @@ ReadVCFData <- function(mydir, myfile, genome) {
     #get rid of all GLs
     #reg.chrs <- c(as.character(seq(1:22)))
     #reg.chrs <- c(as.character(seq(1:22)), "X", "Y")
-    .Object@vr <- keepSeqlevels(.Object@vr, reg.chrs)
+    .Object@vr <- keepSeqlevels(.Object@vr, reg.chrs, pruning.mode="coarse")
     #keepStandardChromosomes(vr)
     hets <- c("0/1", "1|0", "0|1")
     hom_alts <- c("1/1", "1|1")
