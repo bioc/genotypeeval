@@ -1,12 +1,12 @@
 Package: genotypeeval
 Title: QA/QC of a gVCF or VCF file
-Version: 1.13.0
+Version: 1.14.0
 Authors@R: person('Jennifer', 'Tom', email = 'tom.jennifer@gene.com',
         role=c('aut', 'cre'))
 Description: Takes in a gVCF or VCF and reports metrics to assess
     quality of calls.
 Depends:
-    R (>= 3.3.0),
+    R (>= 3.4.0),
     VariantAnnotation
 Imports:
     ggplot2,
@@ -17,7 +17,6 @@ Imports:
     IRanges,
     methods,
     BiocParallel,
-    Rtsne,
     graphics,
     stats
 Collate:
@@ -40,4 +39,4 @@ Maintainer: Jennifer Tom <tom.jennifer@gene.com>
 biocViews: Genetics, BatchEffect, Sequencing, SNP, VariantAnnotation,
     DataImport
 NeedsCompilation: no
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
