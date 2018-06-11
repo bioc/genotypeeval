@@ -18,4 +18,3 @@ numeric, Estimates of log likelihood of ancestry coefficients
 Private function to calc likelihood for admixture
 }
 \keyword{internal}
-

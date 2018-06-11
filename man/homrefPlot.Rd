@@ -18,4 +18,3 @@ ggplot of homozygous reference counts
 Dot plot of variant call counts (hom ref) by chromosome
 }
 \keyword{internal}
-

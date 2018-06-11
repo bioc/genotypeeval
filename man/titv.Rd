@@ -26,4 +26,3 @@ list with name, logical vector (passed or not), numeric vector of transition tra
 Transition transversion ratio in coding and non-coding
 }
 \keyword{internal}
-

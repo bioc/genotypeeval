@@ -24,4 +24,3 @@ list with name, logical (passed or not), numeric (total number of calls)
 Total Calls.  This is the total number of calls in the file (including MULTIs so hom ref, hom var and hom alt might not add up).  These methods are private.  Users are not expected to provide the number of hom ref and number of duplicate calls - these functions are generally called through the function VCFEvaluate
 }
 \keyword{internal}
-

@@ -22,4 +22,3 @@ percent in target range read depth
 For 15 to 60 for 30x (50 percent to 200 percent)
 }
 \keyword{internal}
-

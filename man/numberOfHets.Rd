@@ -20,4 +20,3 @@ list with name, logical (passed or not), numeric (number of hets)
 Count Number of Hets
 }
 \keyword{internal}
-

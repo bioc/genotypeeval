@@ -18,4 +18,3 @@ ggplot bar plot of variant types
 Bar plot of variants (counts)
 }
 \keyword{internal}
-

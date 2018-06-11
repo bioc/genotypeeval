@@ -21,4 +21,3 @@ Object of type GoldDataParam
 Declare class GoldDataParam which will store thresholds to apply to VCFEvaluate object.  This is intended for use in batch mode when a large number of vcf files needs to be screened and individual vcf files that fail flagged.
 All limits follow the format lower limit than upper limit
 }
-

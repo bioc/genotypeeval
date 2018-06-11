@@ -18,4 +18,3 @@ ggplot of variant calls by chromosome
 Dot plot of variant call counts (hom alt and het) by chromosome
 }
 \keyword{internal}
-

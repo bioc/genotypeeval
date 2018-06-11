@@ -22,4 +22,3 @@ VRanges of single processed chromosome
 chunkData is a private function to read in a chunk and process it.  This is a private function and is not meant to be called by the user.  An example is provided in line with bioconductor policies.
 }
 \keyword{internal}
-

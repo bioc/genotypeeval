@@ -18,4 +18,3 @@ list with name, logical (passed or not), numeric median read depth
 Median read depth
 }
 \keyword{internal}
-

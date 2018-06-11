@@ -18,4 +18,3 @@
 \description{
 Declare class VCFQAReport which will evaluate a VCF stored as a ReadData object.
 }
-

@@ -18,4 +18,3 @@ list with name, logical (passed or not), numeric (mean genotype quality)
 Mean Genotype Quality (GQ)
 }
 \keyword{internal}
-

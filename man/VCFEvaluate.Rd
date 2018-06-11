@@ -35,4 +35,3 @@ vcfparams <- VCFQAParam(count.limits=c(3014580000, Inf), readdepth.target = 30)
 vcf <- ReadVCFData(mydir, myfile, "GRCh38")
 ev <- VCFEvaluate(vcf, vcfparams)
 }
-

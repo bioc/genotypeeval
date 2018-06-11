@@ -18,4 +18,3 @@ list with name, logical vector (passed or not), numeric vector maximum gap betwe
 Gap between HETs by Chromosome
 }
 \keyword{internal}
-

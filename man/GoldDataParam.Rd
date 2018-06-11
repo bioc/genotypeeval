@@ -40,4 +40,3 @@ User Constructor for class
 \examples{
 gparam <- GoldDataParam(percent.confirmed=0.792, percent.het.rare = 0.93)
 }
-

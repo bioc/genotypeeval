@@ -18,4 +18,3 @@ ggplot of histogram of read depth
 Histogram of read depth by GT
 }
 \keyword{internal}
-

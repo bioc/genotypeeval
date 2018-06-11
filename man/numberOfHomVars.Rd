@@ -20,4 +20,3 @@ list with name, logical (passed or not), numeric (number of hom vars)
 Count Number of Hom Vars
 }
 \keyword{internal}
-

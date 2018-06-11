@@ -18,4 +18,3 @@ Ancestry coefficients
 Private function to calc coefficients for admixture
 }
 \keyword{internal}
-

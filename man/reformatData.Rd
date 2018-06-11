@@ -16,4 +16,3 @@ list, data frame of logical (passed or not), data frame of numeric (all results)
 Take in the results from the population data and re-format it
 }
 \keyword{private}
-

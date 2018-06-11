@@ -20,4 +20,3 @@ list with name, logical (passed or not), numeric (proportion hets in rare)
 Comparator to rare variants.  Rare is defined as 0.01 percent or less
 }
 \keyword{internal}
-

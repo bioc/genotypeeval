@@ -16,4 +16,3 @@ Transition Transversion Ratio
 Private function to calc transition tranversion (titv) ratio
 }
 \keyword{internal}
-

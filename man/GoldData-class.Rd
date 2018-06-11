@@ -19,4 +19,3 @@ Object of class GoldData
 \description{
 Declare class Gold to store information from Gold" (1000 Genomes for example) along with the GoldDataParam
 }
-

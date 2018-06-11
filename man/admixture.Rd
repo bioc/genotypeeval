@@ -18,4 +18,3 @@ List, name of metric (admixture), list of true false values if passed, ancestry 
 admixture - estimate admixture components using supervised ADMIXTURE algorithm.
 }
 \keyword{internal}
-

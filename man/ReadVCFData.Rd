@@ -31,4 +31,3 @@ mydir <- paste(dirname(vcffn), "/", sep="")
 myfile <-basename(vcffn)
 vcf <- ReadVCFData(mydir, myfile, "GRCh38")
 }
-

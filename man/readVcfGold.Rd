@@ -20,4 +20,3 @@ GRanges, read in from gold file
 Private method for class.  Read in Gold file - will read in the AF if it is detected in header
 }
 \keyword{internal}
-

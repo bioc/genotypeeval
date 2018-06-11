@@ -28,4 +28,3 @@ list with name, logical vector (passed or not), numeric vector of transition tra
 Comparator to gold standard
 }
 \keyword{internal}
-

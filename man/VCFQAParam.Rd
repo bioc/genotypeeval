@@ -54,4 +54,3 @@ User Constructor for class.  Call limits are set as default to pass.
 \examples{
 vcfparams <- VCFQAParam(count.limits=c(3014580000, Inf), readdepth.target = 30)
 }
-

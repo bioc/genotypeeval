@@ -25,4 +25,3 @@ vcf <- ReadVCFData(mydir, myfile, "GRCh38")
 ev <- VCFEvaluate(vcf, vcfparams)
 getName(ev)
 }
-

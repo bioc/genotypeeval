@@ -22,4 +22,3 @@ list with name, logical (passed or not), numeric (percent hets)
 Percent of Hets as Total number of variants
 }
 \keyword{internal}
-

@@ -23,4 +23,3 @@ svp <- ScanVcfParam(which=GRanges("22", IRanges(0,1e5)), geno="GT")
 vcf <- ReadVCFData(mydir, myfile, "GRCh38")
 getVR(vcf)
 }
-

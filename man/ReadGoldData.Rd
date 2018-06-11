@@ -24,4 +24,3 @@ gparam <-  GoldDataParam(percent.confirmed=0.792, percent.het.rare = 0.93)
 g1000fn <- system.file("ext-data", "example_gold_file.vcf", package="genotypeeval")
 g1000 <- ReadGoldData("GRCh38", g1000fn, gparam)
 }
-

@@ -18,4 +18,3 @@ genotype quality histogram as ggplot
 Histogram of genotype qualities
 }
 \keyword{internal}
-

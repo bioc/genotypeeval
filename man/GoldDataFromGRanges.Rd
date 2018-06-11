@@ -24,4 +24,3 @@ gparam <-  GoldDataParam(percent.confirmed=0.792, percent.het.rare = 0.93)
 gr <- GRanges(seqnames="22", IRanges(1e7,5e7))
 gold <- GoldDataFromGRanges("GRCh38", gr, gparam)
 }
-

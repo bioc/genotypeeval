@@ -29,4 +29,3 @@ Object of class VCFData
 Declare class
 Reads in VCF using readVCFAsVRanges
 }
-

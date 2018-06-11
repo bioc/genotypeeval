@@ -22,4 +22,3 @@ list with name, logical vector (passed or not), numeric vector number hets in ma
 Number hets in masked GRanges
 }
 \keyword{internal}
-

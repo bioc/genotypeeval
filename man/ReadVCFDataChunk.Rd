@@ -48,4 +48,3 @@ admix.hom$EUR_AF<- 1
 admix.ref <- c(admix.var, admix.hom)
 ReadVCFDataChunk(mydir, myfile, "GRCh38", admix.ref, numcores=2)
 }
-
