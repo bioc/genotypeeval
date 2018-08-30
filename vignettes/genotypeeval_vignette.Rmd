@@ -36,9 +36,10 @@ We will first get the data for our coding track which will be passed in as cds.r
 
 If you do not have the following libraries (TxDb.Hsapiens.UCSC.hg38.knownGene and dbSNP141 installed yet run the following chunk of code:
 ```{r, getLibrary, eval=FALSE}
-source("https://bioconductor.org/biocLite.R")
-biocLite("TxDb.Hsapiens.UCSC.hg38.knownGene")
-biocLite("SNPlocs.Hsapiens.dbSNP141.GRCh38")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+BiocManager::install("SNPlocs.Hsapiens.dbSNP141.GRCh38")
 
 ```
 
