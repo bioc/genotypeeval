@@ -1,6 +1,6 @@
 Package: genotypeeval
 Title: QA/QC of a gVCF or VCF file
-Version: 1.31.0
+Version: 1.31.1
 Authors@R: person('Jennifer', 'Tom', email = 'tom.jennifer@gene.com',
         role=c('aut', 'cre'))
 Description: Takes in a gVCF or VCF and reports metrics to assess
@@ -26,6 +26,7 @@ Collate:
     VCFQAParam.R
     VCFQAReport.R
     PopulationSummary.R
+    zzz.R
 License: file LICENSE
 LazyData: true
 Suggests:
@@ -40,3 +41,4 @@ biocViews: Genetics, BatchEffect, Sequencing, SNP, VariantAnnotation,
     DataImport
 NeedsCompilation: no
 RoxygenNote: 6.0.1
+PackageStatus: Deprecated
